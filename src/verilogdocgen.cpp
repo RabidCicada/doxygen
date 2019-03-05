@@ -425,7 +425,7 @@ void VerilogDocGen::writeVerilogDeclarations(MemberDef* mdef,OutputList &ol,
       mm=mdef->name().findRev('_');
       if(mm>0)
         mdef->setName(mdef->name().left(mm));
-      writeUCFLink(mdef,ol);
+      FlowChart::writeUCFLink(mdef,ol);
       break;
     case VerilogDocGen::INCLUDE:
       bool ambig;
@@ -927,16 +927,16 @@ void writeFunctionProto(OutputList& ol,const ArgumentList* al,const MemberDef* m
       if (str==0)
   VhdlDocGen::formatString(att,ol,mdef);
       else
-  startFonts(att,str->data(),ol);
+	FlowChart::startFonts(att,str->data(),ol);
     }
-ol.docify(":");
-    //VhdlDocGen::startFonts("in ","stringliteral",ol);
+    ol.docify(":");
+    //FlowChart::startFonts("in ","stringliteral",ol);
     const QCString* str=VerilogDocGen::findKeyWord(qargs.data());
    // ol.startEmphasis();
     if (str==0)
       VhdlDocGen::formatString(qargs,ol,mdef);
     else
-      startFonts(qargs,str->data(),ol);
+      FlowChart::startFonts(qargs,str->data(),ol);
   //   ol.endEmphasis();
      sem=TRUE;
     ol.endBold();

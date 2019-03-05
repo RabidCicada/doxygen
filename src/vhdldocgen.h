@@ -38,7 +38,6 @@ class GroupDef;
 class FileDef;
 class NamespaceDef;
 struct Argument;
-#include "config.h"
 
 /** Class for generating documentation specific for VHDL */
 class VhdlDocGen  
@@ -178,7 +177,6 @@ class VhdlDocGen
     static QCString trFunctionAndProc();
 
     //-----------------------------------------------------
-
     static void prepareComment(QCString&);
     static void formatString(const QCString&,OutputList& ol,const MemberDef*);
 
@@ -249,7 +247,8 @@ class VhdlDocGen
 
   static void resetCodeVhdlParserState();
 
-  public:
+  // public: AG: override with doxygen-master
+ private:
     static void findAllArchitectures(QList<QCString>& ql,const ClassDef *cd);
     static bool compareArgList(ArgumentList*,ArgumentList*);
     static void writeVhdlLink(const ClassDef* cdd ,OutputList& ol,QCString& type,QCString& name,QCString& beh);
@@ -335,6 +334,8 @@ class FlowChart
     FlowChart(int typ,const char*  t,const char* ex,const char* label=0);
     ~FlowChart();
 
+    static void startFonts(const QCString& q, const char *keyword,OutputList& ol);
+    static void writeUCFLink(const MemberDef* mdef,OutputList &ol);
 private:
     int id;
     int stamp;
@@ -348,6 +349,4 @@ private:
 };
 
     bool membersHaveSpecificType(MemberList *ml,uint64 type);
-    void startFonts(const QCString& q, const char *keyword,OutputList& ol);
-    void writeUCFLink(const MemberDef* mdef,OutputList &ol);
 #endif

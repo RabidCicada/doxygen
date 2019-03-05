@@ -1942,7 +1942,7 @@ for(uint j=0;j<qsl.count();j++)
                          if (isExampleBlock && fileDef==0)
                         {
                           // create a dummy filedef for the example
-                         g_sourceFileDef = new FileDef("",exampleName);
+                         g_sourceFileDef = createFileDef("",exampleName);
                         }
                        g_searchCtx = searchCtx;
                        if (g_sourceFileDef) 
