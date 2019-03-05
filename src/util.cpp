@@ -7301,7 +7301,7 @@ g_lang2extMap[] =
   { "fortranfree", "fortranfree",   SrcLangExt_Fortran  },
   { "fortranfixed", "fortranfixed", SrcLangExt_Fortran  },
   { "vhdl",        "vhdl",          SrcLangExt_VHDL     },
-  { "v",           "v",             SrcLangExt_VERILOG  },
+  { "verilog",     "verilog",       SrcLangExt_VERILOG  },
   { "xml",         "xml",           SrcLangExt_XML      },
   { "sql",         "sql",           SrcLangExt_SQL      },
   { "tcl",         "tcl",           SrcLangExt_Tcl      },
@@ -7396,7 +7396,8 @@ void initDefaultExtensionMapping()
   updateLanguageMapping(".f03",      "fortran");
   updateLanguageMapping(".f08",      "fortran");
   updateLanguageMapping(".vhd",      "vhdl");
-  updateLanguageMapping(".v",        "v");
+  updateLanguageMapping(".v",        "verilog");
+  updateLanguageMapping(".sv",        "verilog");
   updateLanguageMapping(".vhdl",     "vhdl");
   updateLanguageMapping(".tcl",      "tcl");
   updateLanguageMapping(".ucf",      "vhdl");

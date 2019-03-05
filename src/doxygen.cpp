@@ -102,6 +102,7 @@
 #include "emoji.h"
 #include "plantuml.h"
 #include "VPreProc.h"
+#include "verilogscanner.h"
 
 // provided by the generated file resources.cpp
 extern void initResources();
@@ -9303,7 +9304,7 @@ static void parseFile(ParserInterface *parser,
       readInputFile(fileName,inBuf);
       QCString s=defProc.performPreprocessing(fi,true).data();
       preBuf.addArray(s.data(),s.length());
-      cerr<< "\n finished Preprocessing ..."<<fi.filePath().data()<<endl;
+      cerr<< "\n finished Preprocessing abc..."<<fi.filePath().data()<<endl;
     }
     else 
     {
@@ -10000,6 +10001,7 @@ void initDoxygen()
   Doxygen::parserManager->registerParser("fortranfree",  new FortranLanguageScannerFree);
   Doxygen::parserManager->registerParser("fortranfixed", new FortranLanguageScannerFixed);
   Doxygen::parserManager->registerParser("vhdl",         new VHDLLanguageScanner);
+  Doxygen::parserManager->registerParser("verilog",      new VerilogScanner);
   Doxygen::parserManager->registerParser("xml",          new XMLScanner);
   Doxygen::parserManager->registerParser("sql",          new SQLScanner);
   Doxygen::parserManager->registerParser("tcl",          new TclLanguageScanner);
