@@ -7324,7 +7324,7 @@ bool updateLanguageMapping(const QCString &extension,const QCString &language)
   SrcLangExt parserId = p->parserId;
   QCString extName = extension.lower();
   if (extName.isEmpty()) return FALSE;
-  if (extName.at(0)!='.') extName.prepend(".");
+  if (extName.at(0)!='.') extName.prepend("."); //AG BUG?! extensions registered with leading dot, but find method isn't provided with that.
   if (g_extLookup.find(extension)!=0) // language was already register for this ext
   {
     g_extLookup.remove(extension);
@@ -7397,7 +7397,7 @@ void initDefaultExtensionMapping()
   updateLanguageMapping(".f08",      "fortran");
   updateLanguageMapping(".vhd",      "vhdl");
   updateLanguageMapping(".v",        "verilog");
-  updateLanguageMapping(".sv",        "verilog");
+  updateLanguageMapping(".sv",       "verilog");
   updateLanguageMapping(".vhdl",     "vhdl");
   updateLanguageMapping(".tcl",      "tcl");
   updateLanguageMapping(".ucf",      "vhdl");
