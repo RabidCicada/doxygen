@@ -9298,18 +9298,18 @@ static void parseFile(ParserInterface *parser,
   {
     BufStr inBuf(fi.size()+4096);
     msg("Preprocessing %s...\n",fn);
-    if(Config_getBool(OPTIMIZE_OUTPUT_VERILOG))
+    if(g_extLookup.find(extension)==SrcLangExt_VERILOG)
     {
       VerilogPreProc defProc;
       readInputFile(fileName,inBuf);
       QCString s=defProc.performPreprocessing(fi,true).data();
       preBuf.addArray(s.data(),s.length());
-      cerr<< "\n finished Preprocessing abc..."<<fi.filePath().data()<<endl;
+      cerr<< "\n finished Preprocessing ..."<<fi.filePath().data()<<endl;
     }
     else 
     {
-    readInputFile(fileName,inBuf);
-    preprocessFile(fileName,inBuf,preBuf);
+      readInputFile(fileName,inBuf);
+      preprocessFile(fileName,inBuf,preBuf);
   }
   }
   else // no preprocessing
