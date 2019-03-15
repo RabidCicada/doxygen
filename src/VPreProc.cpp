@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //*************************************************************************
 //
-// Copyright 2000-2018 by Wilson Snyder.  This program is free software;
+// Copyright 2000-2019 by Wilson Snyder.  This program is free software;
 // you can redistribute it and/or modify it under the terms of either the GNU
 // Lesser General Public License Version 3 or the Perl Artistic License Version 2.0.
 //
@@ -197,7 +197,7 @@ public:
 	m_preprocp = preprocp;
 	m_finFilelinep = filelinep->create(1);
 	// Create lexer
-	m_lexp = new VPreLex (this, filelinep);
+	m_lexp = new VPreLex(this, filelinep);
 	m_lexp->m_keepComments = m_preprocp->keepComments();
 	m_lexp->m_keepWhitespace = m_preprocp->keepWhitespace();
 	m_lexp->m_pedantic = m_preprocp->pedantic();
@@ -292,7 +292,7 @@ VPreProc::~VPreProc() {
 void VPreProc::comment(string cmt) { }
 void VPreProc::openFile(string filename, VFileLine* filelinep) {
     VPreProcImp* idatap = static_cast<VPreProcImp*>(m_opaquep);
-    idatap->openFile (filename,filelinep);
+    idatap->openFile(filename,filelinep);
 }
 int VPreProc::getNextStateToken(string & buf) {
   VPreProcImp* idatap = static_cast<VPreProcImp*>(m_opaquep);
@@ -611,21 +611,20 @@ bool VPreProcImp::readWholefile(const string& filename, StrList& outl) {
     int fd;
     bool eof = false;
 
-    ssize_t position = filename.find_last_of(".");
     if (filename.length()>3 && 0==filename.compare(filename.length()-3, 3, ".gz")) {
 	string cmd = "gunzip -c "+filename;
         if ((fp = popen(cmd.c_str(), "r")) == NULL) {
             return false;
         }
-        fd = fileno (fp);
+        fd = fileno(fp);
     } else {
-        fd = open (filename.c_str(), O_RDONLY);
+        fd = open(filename.c_str(), O_RDONLY);
         if (fd<0) return false;
     }
     while (!eof) {
 	ssize_t todo = INFILTER_IPC_BUFSIZ;
 	errno = 0;
-	ssize_t got = read (fd, buf, todo);
+	ssize_t got = read(fd, buf, todo);
 	if (got>0) {
 	    outl.push_back(string(buf, got));
 	}
@@ -763,14 +762,14 @@ int VPreProcImp::getRawToken() {
 
 void VPreProcImp::debugToken(int tok, const char* cmtp) {
     if (debug()>=5) {
-	string buf = string (yyourtext(), yyourleng());
+	string buf = string(yyourtext(), yyourleng());
 	string::size_type pos;
 	while ((pos=buf.find("\n")) != string::npos) { buf.replace(pos, 1, "\\n"); }
 	while ((pos=buf.find("\r")) != string::npos) { buf.replace(pos, 1, "\\r"); }
-	fprintf (stderr, "%d: %s %s %s(%d) dr%d:  <%d>%-10s: %s\n",
-		 m_lexp->m_tokFilelinep->lineno(), cmtp, m_off?"of":"on",
-		 procStateName(state()), (int)m_states.size(), (int)m_defRefs.size(),
-		 m_lexp->currentStartState(), tokenName(tok), buf.c_str());
+	fprintf(stderr, "%d: %s %s %s(%d) dr%d:  <%d>%-10s: %s\n",
+		m_lexp->m_tokFilelinep->lineno(), cmtp, m_off?"of":"on",
+		procStateName(state()), (int)m_states.size(), (int)m_defRefs.size(),
+		m_lexp->currentStartState(), tokenName(tok), buf.c_str());
     }
 }
 
@@ -782,7 +781,7 @@ int VPreProcImp::getStateToken(string& buf) {
     while (1) {
       next_tok:
 	if (isEof()) {
-	    buf = string (yyourtext(), yyourleng());
+	    buf = string(yyourtext(), yyourleng());
 	    return VP_EOF;
 	}
 	int tok = getRawToken();
@@ -791,7 +790,7 @@ int VPreProcImp::getStateToken(string& buf) {
 
 	// Most states emit white space and comments between tokens. (Unless collecting a string)
 	if (tok==VP_WHITE && state() !=ps_STRIFY) {
-	    buf = string (yyourtext(), yyourleng());
+	    buf = string(yyourtext(), yyourleng());
 	    return (tok);
 	}
 	if (tok==VP_BACKQUOTE && state() !=ps_STRIFY) { tok = VP_TEXT; }
@@ -802,13 +801,13 @@ int VPreProcImp::getStateToken(string& buf) {
 		    string rtn; rtn.assign(yyourtext(),yyourleng());
 		    m_preprocp->comment(rtn);
 		    // Need to insure "foo/**/bar" becomes two tokens
-		    insertUnreadback (" ");
+		    insertUnreadback(" ");
 		} else if (m_lexp->m_keepComments) {
-		    buf = string (yyourtext(), yyourleng());
+		    buf = string(yyourtext(), yyourleng());
 		    return (tok);
 		} else {
 		    // Need to insure "foo/**/bar" becomes two tokens
-		    insertUnreadback (" ");
+		    insertUnreadback(" ");
 		}
 	    }
 	    // We're off or processed the comment specially.  If there are newlines
@@ -834,7 +833,7 @@ int VPreProcImp::getStateToken(string& buf) {
 	    //	`define Q1 `QA()``_b  // -> a_b
 	    // This may be a side effect of how `UNDEFINED remains as `UNDEFINED,
 	    // but it screws up our method here.  So hardcode it.
-	    string name (yyourtext()+1,yyourleng()-1);
+	    string name(yyourtext()+1,yyourleng()-1);
 	    if (m_preprocp->defExists(name)) {   // JOIN(DEFREF)
 		// Put back the `` and process the defref
 		if (debug()>=5) cout<<"```: define "<<name<<" exists, expand first\n";
@@ -848,7 +847,7 @@ int VPreProcImp::getStateToken(string& buf) {
 	}
 	if (tok==VP_SYMBOL_JOIN || tok==VP_DEFREF_JOIN || tok==VP_JOIN) {  // not else if, can fallthru from above if()
 	    // a`` -> string doesn't include the ``, so can just grab next and continue
-	    string out (yyourtext(),yyourleng());
+	    string out(yyourtext(),yyourleng());
 	    if (debug()>=5) cout<<"`` LHS:"<<out<<endl;
 	    // a``b``c can have multiple joins, so we need a stack
 	    m_joinStack.push(out);
@@ -920,7 +919,7 @@ int VPreProcImp::getStateToken(string& buf) {
 	    else if (tok==VP_TEXT) {
 		// IE, something like comment between define and symbol
 		if (!m_off) {
-		    buf = string (yyourtext(), yyourleng());
+		    buf = string(yyourtext(), yyourleng());
 		    return tok;
 		}
 		else goto next_tok;
@@ -944,7 +943,7 @@ int VPreProcImp::getStateToken(string& buf) {
 	    } else if (tok==VP_TEXT) {
 		// IE, something like comment in formals
 		if (!m_off) {
-		    buf = string (yyourtext(), yyourleng());
+		    buf = string(yyourtext(), yyourleng());
 		    return tok;
 		}
 		else goto next_tok;
@@ -1064,6 +1063,10 @@ int VPreProcImp::getStateToken(string& buf) {
 		string rtn; rtn.assign(yyourtext(),yyourleng());
 		refp->nextarg(refp->nextarg()+rtn);
 		goto next_tok;
+	    } else if (tok==VP_STRIFY) {
+		// We must expand stringinfication, when done will return to this state
+		statePush(ps_STRIFY);
+		goto next_tok;
 	    } else {
 		error((string)"Expecting ) or , to end argument list for define reference. Found: "+tokenName(tok));
 		statePop();
@@ -1121,7 +1124,7 @@ int VPreProcImp::getStateToken(string& buf) {
 		if (m_joinStack.empty()) fatalSrc("`` join stack empty, but in a ``");
 		string lhs = m_joinStack.top(); m_joinStack.pop();
 		if (debug()>=5) cout<<"`` LHS:"<<lhs<<endl;
-		string rhs (yyourtext(),yyourleng());
+		string rhs(yyourtext(),yyourleng());
 		if (debug()>=5) cout<<"`` RHS:"<<rhs<<endl;
 		string out = lhs+rhs;
 		if (debug()>=5) cout<<"`` Out:"<<out<<endl;
@@ -1231,8 +1234,8 @@ int VPreProcImp::getStateToken(string& buf) {
 
 	case VP_DEFREF: {
 	    // m_off not right here, but inside substitution, to make this work: `ifdef NEVER `DEFUN(`endif)
-	    sbuffer.clear();
-	    string name (yyourtext()+1,yyourleng()-1);
+ 	    sbuffer.clear();
+	    string name(yyourtext()+1,yyourleng()-1);
 	    if (debug()>=5) cout<<"DefRef "<<name<<endl;
 	    if (m_defPutJoin) { m_defPutJoin = false; unputString("``"); }
 	    if (m_defDepth++ > VPreProc::DEFINE_RECURSION_LEVEL_MAX) {
@@ -1248,7 +1251,7 @@ int VPreProcImp::getStateToken(string& buf) {
 		    sbuffer+= string (yyourtext(), yyourleng());
 		    goto next_tok;
 		} else {
-		    buf = string (yyourtext(), yyourleng());
+		    buf = string(yyourtext(), yyourleng());
 		    return (VP_TEXT);
 		}
 	    }
@@ -1301,7 +1304,7 @@ int VPreProcImp::getStateToken(string& buf) {
 	    if (!m_ifdefStack.empty()) {
 		error("`ifdef not terminated at EOF\n");
 	    }
-	    buf = string (yyourtext(), yyourleng());
+	    buf = string(yyourtext(), yyourleng());
 	    return tok;
 	case VP_UNDEFINEALL:
 	    if (!m_off) {
@@ -1321,7 +1324,7 @@ int VPreProcImp::getStateToken(string& buf) {
 	case VP_TEXT: {
 	    m_defDepth = 0;
 	    if (!m_off) {
-		buf = string (yyourtext(), yyourleng());
+		buf = string(yyourtext(), yyourleng());
 		return tok;
 	    }
 	    else goto next_tok;
@@ -1334,7 +1337,7 @@ int VPreProcImp::getStateToken(string& buf) {
 	    fatalSrc((string)"Internal error: Unexpected token "+tokenName(tok)+"\n");
 	    break;
 	}
-	buf = string (yyourtext(), yyourleng());
+	buf = string(yyourtext(), yyourleng());
 	return tok;
     }
 }
@@ -1350,8 +1353,8 @@ int VPreProcImp::getFinalToken(string& buf) {
     buf = m_finBuf;
     if (0 && debug()>=5) {
 	string bufcln = VPreLex::cleanDbgStrg(buf);
-	fprintf (stderr,"%d: FIN:      %-10s: %s\n",
-		 m_lexp->m_tokFilelinep->lineno(), tokenName(tok), bufcln.c_str());
+	fprintf(stderr,"%d: FIN:      %-10s: %s\n",
+		m_lexp->m_tokFilelinep->lineno(), tokenName(tok), bufcln.c_str());
     }
     // Track `line
     const char* bufp = buf.c_str();
@@ -1532,8 +1535,8 @@ string VPreProcImp::getparseline(bool stop_at_eol, size_t approx_chunk) {
 	     
 	    if (debug()>=5) {
 		string bufcln = VPreLex::cleanDbgStrg(buf);
-		fprintf (stderr,"%d: GETFETC:  %-10s: %s\n",
-			 m_lexp->m_tokFilelinep->lineno(), tokenName(tok), bufcln.c_str());
+		fprintf(stderr,"%d: GETFETC:  %-10s: %s\n",
+			m_lexp->m_tokFilelinep->lineno(), tokenName(tok), bufcln.c_str());
 	    }
 	    if (tok==VP_EOF) {
 		// Add a final newline, if the user forgot the final \n.
@@ -1571,8 +1574,8 @@ string VPreProcImp::getparseline(bool stop_at_eol, size_t approx_chunk) {
 
 	if (debug()>=4) {
 	    string lncln = VPreLex::cleanDbgStrg(theLine);
-	    fprintf (stderr,"%d: GETLINE:  %s\n",
-		     m_lexp->m_tokFilelinep->lineno(), lncln.c_str());
+	    fprintf(stderr,"%d: GETLINE:  %s\n",
+		    m_lexp->m_tokFilelinep->lineno(), lncln.c_str());
 	}
 	return theLine;
     }

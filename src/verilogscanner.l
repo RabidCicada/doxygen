@@ -1937,34 +1937,34 @@ for(uint j=0;j<qsl.count();j++)
                         yyLineNr    = startLine;
                       else
                         yyLineNr    = 1;
-                         g_exampleName   = exampleName;
-                        g_sourceFileDef = fileDef;
-                         if (isExampleBlock && fileDef==0)
-                        {
+                      g_exampleName   = exampleName;
+                      g_sourceFileDef = fileDef;
+                      if (isExampleBlock && fileDef==0)
+                      {
                           // create a dummy filedef for the example
-                         g_sourceFileDef = createFileDef("",exampleName);
-                        }
-                       g_searchCtx = searchCtx;
-                       if (g_sourceFileDef) 
-                       {
+			  g_sourceFileDef = createFileDef("",exampleName);
+		      }
+		      g_searchCtx = searchCtx;
+                      if (g_sourceFileDef) 
+                      {
                         QCString qcs("100001");
                         setCurrentDoc(qcs);
-                       }
+                      }
  
-                       g_currentDefinition = 0;
-                       g_currentMemberDef = 0;
+                      g_currentDefinition = 0;
+                      g_currentMemberDef = 0;
                 
                       if (!g_exampleName.isEmpty())
                       {
-                       g_exampleFile = convertNameToFile(g_exampleName+"-example");
-                       }
+                        g_exampleFile = convertNameToFile(g_exampleName+"-example");
+                      }
   
                       g_includeCodeFragment = inlineFragment;
-                        if(!memberDef) startCodeLine();
+                      if(!memberDef) startCodeLine();
              
-               bool xilinx_ucf=isConstraintFile(yyFileName,".ucf");
+                    bool xilinx_ucf=isConstraintFile(yyFileName,".ucf");
                     bool altera_qsf=isConstraintFile(yyFileName,".qsf");
-
+ 
                    if(xilinx_ucf || altera_qsf) 
                      {
                      parseConstraint(input);

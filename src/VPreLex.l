@@ -14,7 +14,7 @@
  *
  ******************************************************************************
  *
- * Copyright 2000-2018 by Wilson Snyder.  This program is free software;
+ * Copyright 2000-2019 by Wilson Snyder.  This program is free software;
  * you can redistribute it and/or modify it under the terms of either the GNU
  * Lesser General Public License Version 3 or the Perl Artistic License Version 2.0.
  *
@@ -98,6 +98,7 @@ symb		([a-zA-Z_][a-zA-Z0-9_$]*|\\[^ \t\f\r\n]+)
 symbdef		([a-zA-Z_][a-zA-Z0-9_$]*|\\[^ \t\f\r\n`]+)
 word		[a-zA-Z0-9_]+
 drop		[\032]
+bom		[\357\273\277]
 /* Case insensitive; unfortunately ?i: isn't in flex 2.5.4 which is popular */
 ambit		[Aa][Mm][Bb][Ii][Tt]
 pragma		[Pp][Rr][Aa][Gg][Mm][Aa]
@@ -112,6 +113,7 @@ prag_trans_on	({ws}*{pragma_tools}{ws}+{translate_on}{ws}*)
 	/**************************************************************/
 %%
 
+<INITIAL>{bom}		{ }
 <INITIAL,STRIFY>^{ws}*"`line"{ws}+.*{crnl}	{ LEXP->lineDirective(yytext);
 						  return(VP_LINE); }
 
@@ -167,11 +169,13 @@ prag_trans_on	({ws}*{pragma_tools}{ws}+{translate_on}{ws}*)
 	/* Protected blocks */
 <INITIAL>"`protected"						{ yy_push_state(PRTMODE); yymore(); }
 <INITIAL>"`pragma"{wsn}+"protect"{wsn}+"begin_protected"	{ yy_push_state(PRTMODE); yymore(); }
+<INITIAL>"//"{ws}*"pragma"{ws}+"protect"{ws}+"begin_protected"  { yy_push_state(PRTMODE); yymore(); }
 <PRTMODE><<EOF>>	{ linenoInc(); yyerrorf("EOF in `protected"); yyleng=0; yyterminate(); }
 <PRTMODE>{crnl}		{ linenoInc(); return VP_TEXT; }
 <PRTMODE>.	 	{ yymore(); }
 <PRTMODE>"`endprotected" 				{ yy_pop_state(); return VP_TEXT; }
 <PRTMODE>"`pragma"{wsn}+"protect"{wsn}+"end_protected"	{ yy_pop_state(); return VP_TEXT; }
+<PRTMODE>"//"{ws}*"pragma"{ws}+"protect"{ws}+"end_protected"  { yy_pop_state(); return VP_TEXT; }
 
 	/* Pass-through include <> filenames */
 <INCMODE><<EOF>>	{ linenoInc(); yyerrorf("EOF in unterminated include filename"); yyleng=0; yyterminate(); }
@@ -238,7 +242,7 @@ prag_trans_on	({ws}*{pragma_tools}{ws}+{translate_on}{ws}*)
 <ARGMODE>{crnl}		{ linenoInc(); yytext=(char*)"\n"; yyleng=1; return(VP_WHITE); }
 <ARGMODE>{quote}	{ yy_push_state(STRMODE); yymore(); }
 <ARGMODE>"`\\`\""	{ appendDefValue(yytext,yyleng); }  /* Literal text */
-<ARGMODE>{tickquote}	{ return(VP_STRIFY); }
+<ARGMODE>{tickquote}	{ yy_push_state(STRIFY); return(VP_STRIFY); }
 <ARGMODE>[{\[]		{ LEXP->m_parenLevel++; appendDefValue(yytext,yyleng); }
 <ARGMODE>[}\]]		{ LEXP->m_parenLevel--; appendDefValue(yytext,yyleng); }
 <ARGMODE>[(]		{ LEXP->m_parenLevel++;
